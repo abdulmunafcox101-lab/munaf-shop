@@ -1,0 +1,496 @@
+{
+  "entities": {
+    "Shop": {
+      "title": "Shop",
+      "description": "Owner shop profile, subscription plan, and settings for Monaf Telecom / MUNAF SHOP",
+      "type": "object",
+      "properties": {
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "ownerEmail": { "type": "string", "maxLength": 150 },
+        "ownerName": { "type": "string", "maxLength": 100 },
+        "shopName": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "shopSubtitle": { "type": "string", "maxLength": 120 },
+        "businessType": { "type": "string", "maxLength": 80 },
+        "nidNumber": { "type": "string", "maxLength": 40 },
+        "businessAgeYears": { "type": "string", "maxLength": 20 },
+        "photoUrl": { "type": "string", "maxLength": 60000 },
+        "authMethod": { "type": "string", "enum": ["google", "manual"] },
+        "phone": { "type": "string", "maxLength": 30 },
+        "supportPhone": { "type": "string", "maxLength": 30 },
+        "address": { "type": "string", "maxLength": 200 },
+        "planTier": { "type": "string", "enum": ["free", "pro", "business"] },
+        "planBillingCycle": { "type": "string", "enum": ["monthly", "yearly"] },
+        "planStartedAt": { "type": "string", "format": "date-time" },
+        "planExpiresAt": { "type": "string", "format": "date-time" },
+        "accountStatus": { "type": "string", "enum": ["active", "blocked", "banned"] },
+        "banReason": { "type": "string", "maxLength": 300 },
+        "bannedAt": { "type": "string", "format": "date-time" },
+        "bannedBy": { "type": "string", "maxLength": 150 },
+        "pinHash": { "type": "string", "maxLength": 200 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerUid", "shopName", "createdAt", "updatedAt"]
+    },
+    "ShopBranch": {
+      "title": "ShopBranch",
+      "description": "Shop branch profile for multi-branch business switching",
+      "type": "object",
+      "properties": {
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "name": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "address": { "type": "string", "maxLength": 200 },
+        "phone": { "type": "string", "maxLength": 30 },
+        "businessType": { "type": "string", "maxLength": 80 },
+        "isDefault": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerUid", "name", "isDefault", "createdAt", "updatedAt"]
+    },
+    "Contact": {
+      "title": "Contact",
+      "description": "TallyKhata customer or supplier party with running balance and loyalty points",
+      "type": "object",
+      "properties": {
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "branchId": { "type": "string", "maxLength": 64 },
+        "name": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "phone": { "type": "string", "maxLength": 30 },
+        "contactType": { "type": "string", "enum": ["customer", "supplier"] },
+        "address": { "type": "string", "maxLength": 200 },
+        "photoUrl": { "type": "string", "maxLength": 60000 },
+        "smsAlertEnabled": { "type": "boolean" },
+        "balance": { "type": "number" },
+        "loyaltyPoints": { "type": "number" },
+        "dueDate": { "type": "string", "maxLength": 10 },
+        "lastNote": { "type": "string", "maxLength": 200 },
+        "lastEntryAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerUid", "name", "contactType", "balance", "lastEntryAt", "createdAt", "updatedAt"]
+    },
+    "KhataEntry": {
+      "title": "KhataEntry",
+      "description": "Individual TallyKhata transaction (dilam / pelam) linked to a contact",
+      "type": "object",
+      "properties": {
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "branchId": { "type": "string", "maxLength": 64 },
+        "contactId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "contactName": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "entryType": { "type": "string", "enum": ["dilam", "pelam"] },
+        "amount": { "type": "number" },
+        "note": { "type": "string", "maxLength": 300 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerUid", "contactId", "contactName", "entryType", "amount", "createdAt"]
+    },
+    "CashEntry": {
+      "title": "CashEntry",
+      "description": "Daily cashbook entry for sales, purchases, expenses, and MFS/telecom recharge",
+      "type": "object",
+      "properties": {
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "branchId": { "type": "string", "maxLength": 64 },
+        "cashType": { "type": "string", "enum": ["cash_in", "cash_out"] },
+        "category": { "type": "string", "minLength": 1, "maxLength": 80 },
+        "amount": { "type": "number" },
+        "note": { "type": "string", "maxLength": 300 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerUid", "cashType", "category", "amount", "createdAt"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Shop stock item for quick sales and inventory tracking",
+      "type": "object",
+      "properties": {
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "branchId": { "type": "string", "maxLength": 64 },
+        "name": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "code": { "type": "string", "minLength": 1, "maxLength": 40 },
+        "category": { "type": "string", "minLength": 1, "maxLength": 60 },
+        "purchasePrice": { "type": "number" },
+        "salePrice": { "type": "number" },
+        "quantity": { "type": "number" },
+        "lowStockThreshold": { "type": "number" },
+        "expiryDate": { "type": "string", "maxLength": 10 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerUid", "name", "code", "category", "purchasePrice", "salePrice", "quantity", "lowStockThreshold", "createdAt", "updatedAt"]
+    },
+    "SaleInvoice": {
+      "title": "SaleInvoice",
+      "description": "Multi-item POS sales invoice/memo with cost, profit, discount, loyalty points, and cash or due settlement",
+      "type": "object",
+      "properties": {
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "branchId": { "type": "string", "maxLength": 64 },
+        "invoiceNo": { "type": "string", "minLength": 1, "maxLength": 40 },
+        "items": { "type": "array" },
+        "subtotal": { "type": "number" },
+        "discount": { "type": "number" },
+        "totalAmount": { "type": "number" },
+        "costTotal": { "type": "number" },
+        "profitAmount": { "type": "number" },
+        "paymentMode": { "type": "string", "enum": ["cash", "due"] },
+        "contactId": { "type": "string", "maxLength": 128 },
+        "contactName": { "type": "string", "maxLength": 100 },
+        "customerPhone": { "type": "string", "maxLength": 30 },
+        "loyaltyEarned": { "type": "number" },
+        "loyaltyRedeemed": { "type": "number" },
+        "note": { "type": "string", "maxLength": 300 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerUid", "invoiceNo", "items", "subtotal", "discount", "totalAmount", "costTotal", "profitAmount", "paymentMode", "createdAt"]
+    },
+    "PurchaseOrder": {
+      "title": "PurchaseOrder",
+      "description": "Supplier stock purchase invoice that restocks inventory and syncs cash or supplier payable",
+      "type": "object",
+      "properties": {
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "branchId": { "type": "string", "maxLength": 64 },
+        "supplierId": { "type": "string", "maxLength": 128 },
+        "supplierName": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "supplierPhone": { "type": "string", "maxLength": 30 },
+        "invoiceRef": { "type": "string", "maxLength": 50 },
+        "items": { "type": "array" },
+        "totalAmount": { "type": "number" },
+        "paymentMode": { "type": "string", "enum": ["cash", "due"] },
+        "note": { "type": "string", "maxLength": 300 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerUid", "supplierName", "items", "totalAmount", "paymentMode", "createdAt"]
+    },
+    "InstallmentPlan": {
+      "title": "InstallmentPlan",
+      "description": "Customer EMI / kisti installment plan with schedule, paid counts, and reminder dates",
+      "type": "object",
+      "properties": {
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "branchId": { "type": "string", "maxLength": 64 },
+        "contactId": { "type": "string", "maxLength": 128 },
+        "contactName": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "customerPhone": { "type": "string", "maxLength": 30 },
+        "itemTitle": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "totalAmount": { "type": "number" },
+        "downPayment": { "type": "number" },
+        "installmentCount": { "type": "number" },
+        "paidCount": { "type": "number" },
+        "installmentAmount": { "type": "number" },
+        "frequency": { "type": "string", "enum": ["weekly", "monthly"] },
+        "nextDueDate": { "type": "string", "minLength": 10, "maxLength": 10 },
+        "remainingAmount": { "type": "number" },
+        "status": { "type": "string", "enum": ["active", "completed"] },
+        "note": { "type": "string", "maxLength": 300 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerUid", "contactName", "itemTitle", "totalAmount", "downPayment", "installmentCount", "paidCount", "installmentAmount", "frequency", "nextDueDate", "remainingAmount", "status", "createdAt", "updatedAt"]
+    },
+    "StaffMember": {
+      "title": "StaffMember",
+      "description": "Shop employee / staff profile with PIN hash and role-based permissions",
+      "type": "object",
+      "properties": {
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "branchId": { "type": "string", "maxLength": 64 },
+        "name": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "phone": { "type": "string", "maxLength": 30 },
+        "role": { "type": "string", "enum": ["manager", "cashier", "salesman"] },
+        "pinHash": { "type": "string", "minLength": 8, "maxLength": 200 },
+        "canViewProfit": { "type": "boolean" },
+        "canDeleteRecords": { "type": "boolean" },
+        "active": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerUid", "name", "role", "pinHash", "canViewProfit", "canDeleteRecords", "active", "createdAt", "updatedAt"]
+    },
+    "ShiftClosing": {
+      "title": "ShiftClosing",
+      "description": "Daily staff/owner cash shift closing and drawer reconciliation handover log",
+      "type": "object",
+      "properties": {
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "branchId": { "type": "string", "maxLength": 64 },
+        "staffName": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "shiftLabel": { "type": "string", "minLength": 1, "maxLength": 60 },
+        "openingCash": { "type": "number" },
+        "cashInTotal": { "type": "number" },
+        "cashOutTotal": { "type": "number" },
+        "expectedClosing": { "type": "number" },
+        "actualCashCount": { "type": "number" },
+        "variance": { "type": "number" },
+        "note": { "type": "string", "maxLength": 300 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerUid", "staffName", "shiftLabel", "openingCash", "cashInTotal", "cashOutTotal", "expectedClosing", "actualCashCount", "variance", "createdAt"]
+    },
+    "TelecomEntry": {
+      "title": "TelecomEntry",
+      "description": "Flexiload, MFS (bKash/Nagad/Rocket/Upay/GPay), and SIM/telecom service log",
+      "type": "object",
+      "properties": {
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "branchId": { "type": "string", "maxLength": 64 },
+        "operator": { "type": "string", "enum": ["Grameenphone", "Robi", "Banglalink", "Teletalk", "bKash", "Nagad", "Rocket", "Upay", "GPay", "Other"] },
+        "serviceType": { "type": "string", "enum": ["recharge", "cash_in", "cash_out", "send_money", "sim_sale"] },
+        "customerPhone": { "type": "string", "maxLength": 30 },
+        "amount": { "type": "number" },
+        "commission": { "type": "number" },
+        "paymentStatus": { "type": "string", "enum": ["paid", "due"] },
+        "note": { "type": "string", "maxLength": 200 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerUid", "operator", "serviceType", "amount", "commission", "paymentStatus", "createdAt"]
+    },
+    "SupportTicket": {
+      "title": "SupportTicket",
+      "description": "Customer support ticket linked to 01608603364 helpline with admin reply, status workflow, and reason",
+      "type": "object",
+      "properties": {
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "subject": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "category": { "type": "string", "minLength": 1, "maxLength": 60 },
+        "message": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "contactPhone": { "type": "string", "maxLength": 30 },
+        "status": { "type": "string", "enum": ["open", "pending", "processing", "resolved", "rejected"] },
+        "adminReply": { "type": "string", "maxLength": 500 },
+        "statusReason": { "type": "string", "maxLength": 300 },
+        "repliedAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerUid", "subject", "category", "message", "status", "createdAt", "updatedAt"]
+    },
+    "Complaint": {
+      "title": "Complaint",
+      "description": "Dedicated user complaint box submission with urgency level, reference info, and admin resolution reply",
+      "type": "object",
+      "properties": {
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "title": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "category": { "type": "string", "minLength": 1, "maxLength": 60 },
+        "severity": { "type": "string", "enum": ["normal", "urgent", "critical"] },
+        "referenceInfo": { "type": "string", "maxLength": 80 },
+        "description": { "type": "string", "minLength": 1, "maxLength": 600 },
+        "contactPhone": { "type": "string", "maxLength": 30 },
+        "status": { "type": "string", "enum": ["pending", "processing", "resolved", "rejected"] },
+        "adminReply": { "type": "string", "maxLength": 500 },
+        "statusReason": { "type": "string", "maxLength": 300 },
+        "repliedAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerUid", "title", "category", "severity", "description", "status", "createdAt", "updatedAt"]
+    },
+    "UpgradeRequest": {
+      "title": "UpgradeRequest",
+      "description": "Package upgrade or catalog order record with bKash/Nagad/Rocket/Upay/GPay TrxID, 4-stage status, and admin reason",
+      "type": "object",
+      "properties": {
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "planTier": { "type": "string", "enum": ["pro", "business", "catalog"] },
+        "catalogTitle": { "type": "string", "maxLength": 120 },
+        "billingCycle": { "type": "string", "enum": ["monthly", "yearly"] },
+        "amount": { "type": "number" },
+        "paymentMethod": { "type": "string", "enum": ["bKash", "Nagad", "Rocket", "Upay", "GPay"] },
+        "senderNumber": { "type": "string", "maxLength": 30 },
+        "trxId": { "type": "string", "minLength": 1, "maxLength": 60 },
+        "status": { "type": "string", "enum": ["pending", "processing", "active", "rejected"] },
+        "statusReason": { "type": "string", "maxLength": 300 },
+        "startedAt": { "type": "string", "format": "date-time" },
+        "expiresAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ownerUid", "planTier", "billingCycle", "amount", "paymentMethod", "trxId", "status", "createdAt"]
+    },
+    "AdminUser": {
+      "title": "AdminUser",
+      "description": "Authorized platform administrator record for MUNAF SHOP",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "email": { "type": "string", "minLength": 3, "maxLength": 150 },
+        "role": { "type": "string", "enum": ["admin"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "role", "createdAt"]
+    },
+    "PlatformPricing": {
+      "title": "PlatformPricing",
+      "description": "Dynamic package pricing configuration controlled by platform admins",
+      "type": "object",
+      "properties": {
+        "proMonthly": { "type": "number" },
+        "proYearly": { "type": "number" },
+        "businessMonthly": { "type": "number" },
+        "businessYearly": { "type": "number" },
+        "discountNote": { "type": "string", "maxLength": 120 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["proMonthly", "proYearly", "businessMonthly", "businessYearly", "updatedAt"]
+    },
+    "PaymentGatewaysConfig": {
+      "title": "PaymentGatewaysConfig",
+      "description": "Admin-managed payment gateway numbers, bKash payment link, account types, and instructions for bKash, Nagad, Rocket, Upay, and GPay",
+      "type": "object",
+      "properties": {
+        "bkashNumber": { "type": "string", "maxLength": 30 },
+        "bkashType": { "type": "string", "enum": ["personal", "agent", "merchant", "gpay"] },
+        "bkashEnabled": { "type": "boolean" },
+        "bkashNote": { "type": "string", "maxLength": 150 },
+        "bkashPaymentLink": { "type": "string", "maxLength": 240 },
+        "nagadNumber": { "type": "string", "maxLength": 30 },
+        "nagadType": { "type": "string", "enum": ["personal", "agent", "merchant", "gpay"] },
+        "nagadEnabled": { "type": "boolean" },
+        "nagadNote": { "type": "string", "maxLength": 150 },
+        "rocketNumber": { "type": "string", "maxLength": 30 },
+        "rocketType": { "type": "string", "enum": ["personal", "agent", "merchant", "gpay"] },
+        "rocketEnabled": { "type": "boolean" },
+        "rocketNote": { "type": "string", "maxLength": 150 },
+        "upayNumber": { "type": "string", "maxLength": 30 },
+        "upayType": { "type": "string", "enum": ["personal", "agent", "merchant", "gpay"] },
+        "upayEnabled": { "type": "boolean" },
+        "upayNote": { "type": "string", "maxLength": 150 },
+        "gpayNumber": { "type": "string", "maxLength": 60 },
+        "gpayType": { "type": "string", "enum": ["personal", "agent", "merchant", "gpay"] },
+        "gpayEnabled": { "type": "boolean" },
+        "gpayNote": { "type": "string", "maxLength": 150 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "bkashNumber", "bkashType", "bkashEnabled",
+        "nagadNumber", "nagadType", "nagadEnabled",
+        "rocketNumber", "rocketType", "rocketEnabled",
+        "upayNumber", "upayType", "upayEnabled",
+        "gpayNumber", "gpayType", "gpayEnabled",
+        "updatedAt"
+      ]
+    },
+    "CatalogItem": {
+      "title": "CatalogItem",
+      "description": "Admin-managed digital service or product catalog offering displayed in the user catalog",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "category": { "type": "string", "minLength": 1, "maxLength": 60 },
+        "price": { "type": "number" },
+        "unitLabel": { "type": "string", "maxLength": 40 },
+        "description": { "type": "string", "maxLength": 240 },
+        "features": { "type": "string", "maxLength": 400 },
+        "accentColor": { "type": "string", "enum": ["crimson", "emerald", "sky", "amber", "violet"] },
+        "enabled": { "type": "boolean" },
+        "isPublic": { "type": "boolean" },
+        "sortOrder": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["title", "category", "price", "accentColor", "enabled", "isPublic", "sortOrder", "createdAt", "updatedAt"]
+    },
+    "AppUpdateConfig": {
+      "title": "AppUpdateConfig",
+      "description": "Owner-only mandatory Android/Web app update version control, APK download URL, and release description",
+      "type": "object",
+      "properties": {
+        "latestVersionName": { "type": "string", "minLength": 1, "maxLength": 32 },
+        "latestVersionCode": { "type": "number" },
+        "minSupportedVersionCode": { "type": "number" },
+        "apkDownloadUrl": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "updateDescription": { "type": "string", "minLength": 1, "maxLength": 1500 },
+        "forceUpdate": { "type": "boolean" },
+        "publishedBy": { "type": "string", "maxLength": 40 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["latestVersionName", "latestVersionCode", "minSupportedVersionCode", "apkDownloadUrl", "updateDescription", "forceUpdate", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/platformConfig/pricing": {
+      "schema": { "$ref": "#/entities/PlatformPricing" },
+      "description": "Publicly readable (authenticated) platform pricing config writable only by admins"
+    },
+    "/platformConfig/gateways": {
+      "schema": { "$ref": "#/entities/PaymentGatewaysConfig" },
+      "description": "Authenticated readable payment gateway numbers (bKash, Nagad, Rocket, Upay, GPay) writable only by admins"
+    },
+    "/platformConfig/appUpdate": {
+      "schema": { "$ref": "#/entities/AppUpdateConfig" },
+      "description": "Publicly single-doc readable (PII-free) mandatory update policy writable strictly by the platform Owner (super admin)"
+    },
+    "/catalogItems/{itemId}": {
+      "schema": { "$ref": "#/entities/CatalogItem" },
+      "description": "Admin-managed public package and digital service catalog items"
+    },
+    "/admins/{adminUid}": {
+      "schema": { "$ref": "#/entities/AdminUser" },
+      "description": "Platform administrator allowlist managed by super-admin"
+    },
+    "/shops/{ownerUid}": {
+      "schema": { "$ref": "#/entities/Shop" },
+      "description": "Shop profile owned by the authenticated user"
+    },
+    "/shops/{ownerUid}/branches/{branchId}": {
+      "schema": { "$ref": "#/entities/ShopBranch" },
+      "description": "Shop branch definitions for multi-shop / multi-branch switching"
+    },
+    "/shops/{ownerUid}/contacts/{contactId}": {
+      "schema": { "$ref": "#/entities/Contact" },
+      "description": "Customer and supplier khata contacts for the shop"
+    },
+    "/shops/{ownerUid}/khataEntries/{entryId}": {
+      "schema": { "$ref": "#/entities/KhataEntry" },
+      "description": "Dilam / Pelam ledger entries atomically synced with contact balance"
+    },
+    "/shops/{ownerUid}/cashEntries/{cashId}": {
+      "schema": { "$ref": "#/entities/CashEntry" },
+      "description": "Daily cashbook entries for cash in and cash out"
+    },
+    "/shops/{ownerUid}/products/{productId}": {
+      "schema": { "$ref": "#/entities/Product" },
+      "description": "Inventory items and stock levels for the shop"
+    },
+    "/shops/{ownerUid}/invoices/{invoiceId}": {
+      "schema": { "$ref": "#/entities/SaleInvoice" },
+      "description": "Multi-item POS sales invoices and receipts for the shop"
+    },
+    "/shops/{ownerUid}/purchaseOrders/{poId}": {
+      "schema": { "$ref": "#/entities/PurchaseOrder" },
+      "description": "Supplier purchase orders that increment product stock and sync cash or payable"
+    },
+    "/shops/{ownerUid}/installments/{installmentId}": {
+      "schema": { "$ref": "#/entities/InstallmentPlan" },
+      "description": "Installment (kisti / EMI) schedules and payment tracking"
+    },
+    "/shops/{ownerUid}/staffMembers/{staffId}": {
+      "schema": { "$ref": "#/entities/StaffMember" },
+      "description": "Shop staff members with PIN hash and role permissions"
+    },
+    "/shops/{ownerUid}/shiftClosings/{shiftId}": {
+      "schema": { "$ref": "#/entities/ShiftClosing" },
+      "description": "Daily shift cash closing and handover reconciliation entries"
+    },
+    "/shops/{ownerUid}/telecomEntries/{txId}": {
+      "schema": { "$ref": "#/entities/TelecomEntry" },
+      "description": "Telecom recharge and MFS service register entries"
+    },
+    "/shops/{ownerUid}/supportTickets/{ticketId}": {
+      "schema": { "$ref": "#/entities/SupportTicket" },
+      "description": "Customer support tickets for the shop"
+    },
+    "/shops/{ownerUid}/complaints/{complaintId}": {
+      "schema": { "$ref": "#/entities/Complaint" },
+      "description": "Dedicated user complaint box entries for the shop"
+    },
+    "/shops/{ownerUid}/upgradeRequests/{requestId}": {
+      "schema": { "$ref": "#/entities/UpgradeRequest" },
+      "description": "Package upgrade and catalog order payment records"
+    }
+  }
+}
